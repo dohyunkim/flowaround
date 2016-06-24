@@ -32,12 +32,12 @@
   \flowaround@after=#2\relax
 }
 
-\def\flowaround@@#1{%
+\long\def\flowaround@@#1{%
   \@ifnextchar[{\flowaround@flowaround{#1}}%
                {\flowaround@flowaround{#1}[]}%
 }
 
-\def\flowaround@flowaround#1[#2]{%
+\long\def\flowaround@flowaround#1[#2]{%
   \setbox\z@\hbox{#1}%
   \setbox\z@\vbox{\hsize\wd\z@\linewidth\hsize
     \parskip\z@skip

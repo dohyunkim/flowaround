@@ -14,6 +14,9 @@
     \let\par\flowaround@origpar
     \PackageWarning{flowaround}{Conflit with preceding paragraph?}%
   \fi
+  \ifdim\baselineskip>\z@\else
+    \PackageError{flowaround}{No work in alignment.}{\string\baselineskip<=0}%
+  \fi
   \@flowaround@isrunningtrue
   \in@*{#1}%
   \ifin@
@@ -117,6 +120,8 @@
       \ifnum#1>\z@
         \hangindent\if@flowaround@putright-\fi\flowaround@boxwidth
         \hangafter-#1\relax
+      \else
+        \hangindent\z@
       \fi
     \fi
   \fi

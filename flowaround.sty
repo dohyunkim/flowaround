@@ -55,10 +55,13 @@
   % typeset the box
   \leavevmode
   \vadjust pre {%
+    \noindent
+    \kern\@totalleftmargin
     \if@flowaround@putright
       \hfill
     \fi
     \box\z@
+    \kern\rightmargin
     \vskip-\flowaround@boxheight
   }%
   % calculate variables; paragraph shaping

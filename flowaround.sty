@@ -12,7 +12,7 @@
 \protected\def\flowaround#1#{%
   \if@flowaround@isrunning
     \let\par\flowaround@origpar
-    \PackageWarning{flowaround}{Conflit with preceding paragraph!}%
+    \PackageWarning{flowaround}{Conflit with preceding paragraph?}%
   \fi
   \@flowaround@isrunningtrue
   \in@*{#1}%
@@ -96,10 +96,14 @@
 }
 
 \def\flowaround@numoflines#1#2{%
-  #2=#1\relax
-  \divide #2\baselineskip
-  \ifdim#1>#2\baselineskip
-    \advance #2\@ne
+  \ifdim\baselineskip>\z@
+    #2=#1\relax
+    \divide #2\baselineskip
+    \ifdim#1>#2\baselineskip
+      \advance #2\@ne
+    \fi
+  \else
+    #2=\z@
   \fi
 }
 

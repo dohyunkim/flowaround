@@ -1,0 +1,146 @@
+\ProvidesPackage{flowaround}[2016/06/23 v0.5 texts flow around]
+
+\newdimen\flowaround@boxwidth
+\newdimen\flowaround@boxheight
+\newdimen\flowaround@leftmargin
+\newdimen\flowaround@linewidth
+\newdimen\flowaround@totalheight
+\newcount\flowaround@after
+\newif\if@flowaround@putright
+\newif\if@flowaround@isrunning
+
+\protected\def\flowaround#1#{%
+  \if@flowaround@isrunning
+    \let\par\flowaround@origpar
+    \PackageWarning{flowaround}{Conflit with preceding paragraph!}%
+  \fi
+  \@flowaround@isrunningtrue
+  \in@*{#1}%
+  \ifin@
+    \@flowaround@putrighttrue
+  \else
+    \@flowaround@putrightfalse
+  \fi
+  \flowaround@get@after#1[\z@]\stop
+  \flowaround@@
+}
+
+\def\flowaround@get@after#1[#2]#3\stop{%
+  \flowaround@after=#2\relax
+}
+
+\def\flowaround@@#1{%
+  \@ifnextchar[{\flowaround@flowaround{#1}}%
+               {\flowaround@flowaround{#1}[]}%
+}
+
+\def\flowaround@flowaround#1[#2]{%
+  \setbox\z@\hbox{#1}%
+  \setbox\z@\vbox{\hsize\wd\z@\linewidth\hsize
+    \parskip\z@skip
+    \setbox\tw@\hbox{M}%
+    \vskip\ht\tw@
+    \ifnum\flowaround@after>\z@
+      \vskip\flowaround@after\baselineskip
+    \fi
+    \centering
+    \unhbox\z@
+    \par #2%
+    \vskip1ex % 1ex: vert. margin
+  }%
+  \flowaround@boxwidth=\dimexpr\wd\z@+1em\relax % 1em : horiz. margin
+  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
+  \ht\z@=\flowaround@boxheight
+  \dp\z@=\z@
+  % typeset the box
+  \leavevmode
+  \vadjust pre {%
+    \if@flowaround@putright
+      \hfill
+    \fi
+    \box\z@
+    \vskip-\flowaround@boxheight
+  }%
+  % calculate variables; paragraph shaping
+  \flowaround@leftmargin=\@totalleftmargin
+  \if@flowaround@putright \else
+    \advance\flowaround@leftmargin \flowaround@boxwidth
+  \fi
+  \flowaround@linewidth=\dimexpr\linewidth-\flowaround@boxwidth\relax
+  \flowaround@numoflines\flowaround@boxheight\@tempcnta
+  \flowaround@parshape\@tempcnta\flowaround@after
+  % redefine \par
+  \let\flowaround@origpar\par
+  \flowaround@totalheight\z@
+  \def\par{\flowaround@origpar
+    % dimen@    : height remaining
+    % @tempcnta : lines to be indented
+    % @tempcntb : remaining <after>
+    \advance\flowaround@totalheight\dimexpr\prevgraf\baselineskip+\parskip\relax
+    \dimen@=\dimexpr\flowaround@boxheight-\flowaround@totalheight\relax
+    \ifdim\dimen@>\z@ % box stretches to the next para
+      \flowaround@numoflines\dimen@\@tempcnta
+      \flowaround@numoflines\flowaround@totalheight\@tempcntb
+      \@tempcntb=\numexpr\flowaround@after-\@tempcntb\relax
+      \flowaround@parshape\@tempcnta\@tempcntb
+    \else
+      \flowaround@parshape\z@\z@
+      \let\par\flowaround@origpar
+      \@flowaround@isrunningfalse
+    \fi
+  }%
+  \ignorespaces
+}
+
+\def\flowaround@numoflines#1#2{%
+  #2=#1\relax
+  \divide #2\baselineskip
+  \ifdim#1>#2\baselineskip
+    \advance #2\@ne
+  \fi
+}
+
+\def\flowaround@parshape#1#2{%
+  \ifnum#2>\z@
+    \flowaround@parshape@parshape{#1}{#2}%
+  \else
+    \ifnum\parshape>\z@
+      \flowaround@parshape@parshape{#1}\z@
+    \else
+      \ifnum#1>\z@
+        \hangindent\if@flowaround@putright-\fi\flowaround@boxwidth
+        \hangafter-#1\relax
+      \fi
+    \fi
+  \fi
+}
+
+\def\flowaround@parshape@parshape#1#2{%
+  \toks@{}%
+  \count@\z@
+  \loop
+    \ifnum\count@<#2\relax
+    \toks@\expandafter{\the\toks@\@totalleftmargin\linewidth}%
+    \advance\count@\@ne
+  \repeat
+  \count@\z@
+  \loop
+    \ifnum\count@<\numexpr#1-#2\relax
+    \toks@\expandafter{\the\toks@\flowaround@leftmargin\flowaround@linewidth}%
+    \advance\count@\@ne
+  \repeat
+  \parshape \numexpr#1+1\relax \the\toks@ \@totalleftmargin \linewidth
+}
+
+% Usage:
+%       A paragraph starts. \flowaround*[<after>]{<image>}[<text>]
+%       paragraph text continues ...
+%
+%   required:
+%       {<image>}  image or any horizontal items
+%
+%   optional:
+%       *          Put <image> at the right side of para.
+%       [<after>]  Move flowaround box downwards by <after> lines.
+%       [<text>]   Horizontal/vertical items that will be put below <image>.
+%                  For captions, use \captionof command from caption package.

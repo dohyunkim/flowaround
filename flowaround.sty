@@ -14,9 +14,6 @@
     \let\par\flowaround@origpar
     \PackageWarning{flowaround}{Conflit with preceding paragraph?}%
   \fi
-  \ifdim\baselineskip>\z@\else
-    \PackageError{flowaround}{No work in alignment.}{\string\baselineskip<=0}%
-  \fi
   \@flowaround@isrunningtrue
   \in@*{#1}%
   \ifin@
@@ -25,7 +22,12 @@
     \@flowaround@putrightfalse
   \fi
   \flowaround@get@after#1[\z@]\stop
-  \flowaround@@
+  \leavevmode
+  \ifinner
+    \PackageError{flowaround}{No work in inner mode.}{hbox or alignment?}%
+  \else
+    \expandafter\flowaround@@
+  \fi
 }
 
 \def\flowaround@get@after#1[#2]#3\stop{%
@@ -56,7 +58,6 @@
   \ht\z@=\flowaround@boxheight
   \dp\z@=\z@
   % typeset the box
-  \leavevmode
   \vadjust pre {%
     \noindent
     \kern\@totalleftmargin

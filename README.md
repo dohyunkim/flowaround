@@ -14,10 +14,7 @@ and in the body of document:
 \flowaround*[<number>]{<image>}[<caption>]
 ```
 This command should come near the start of a paragraph.
-Starting a paragraph with this command is OK in most cases.
-In list environment (`itemize` etc) for instance, however,
-some unexpected result might follow. So, it is recommended
-to put this command somwhere around the beginning of a paragraph.
+Starting a paragraph with this command is also OK in most cases.
 
 ## Argument
 

@@ -19,7 +19,7 @@ Starting a paragraph with this command is also OK in most cases.
 ## Argument
 
 ```
-<image>
+{<image>}
 ```
 Any horizontal stuffs.
 When inserting an image, use `\includegraphics` command for yourself.

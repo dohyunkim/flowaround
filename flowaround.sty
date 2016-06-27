@@ -59,6 +59,10 @@
   \dp\z@=\z@
   % typeset the box
   \vadjust pre {%
+    \ifdim\dimexpr\pagegoal-\pagetotal\relax
+          <\dimexpr\flowaround@boxheight+\baselineskip\relax
+      \penalty-\@M
+    \fi
     \noindent
     \kern\@totalleftmargin
     \if@flowaround@putright
@@ -66,7 +70,6 @@
     \fi
     \box\z@
     \kern\rightmargin
-    \par\penalty100
     \vskip-\flowaround@boxheight
   }%
   % calculate variables; paragraph shaping
@@ -147,8 +150,8 @@
 }
 
 % Usage:
-%       A paragraph starts. \flowaround*[<after>]{<image>}[<text>]
-%       paragraph text continues ...
+%       \flowaround*[<after>]{<image>}[<text>]
+%       paragraph text ...
 %
 %   required:
 %       {<image>}  image or any horizontal items

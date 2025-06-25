@@ -13,7 +13,8 @@
 
 \protected\def\flowaround#1#{%
   \if@flowaround@isrunning
-    \let\par\flowaround@origpar
+    \ifdefined\flowaround@origpar \let\par\flowaround@origpar \fi
+    \ifdefined\flowaround@orig@par \let\@par\flowaround@orig@par \fi
     \PackageWarning{flowaround}{Conflit with preceding paragraph?}%
   \fi
   \@flowaround@isrunningtrue
@@ -234,27 +235,28 @@
   \flowaround@parshape\@tempcnta\flowaround@after
   % redefine \par
   \let\flowaround@origpar\par
+  \let\flowaround@orig@par\@par
   \flowaround@totalheight\z@
-  \@setpar{\flowaround@origpar
-    % dimen@    : height remaining
-    % @tempcnta : lines to be indented
-    % @tempcntb : remaining <after>
-    \advance\flowaround@totalheight\dimexpr\prevgraf\baselineskip+\parskip\relax
-    \dimen@=\dimexpr\flowaround@boxheight-\flowaround@totalheight\relax
-    \ifdim\dimen@>\z@ % box stretches to the next para
-      \flowaround@numoflines\dimen@\@tempcnta
-      \flowaround@numoflines\flowaround@totalheight\@tempcntb
-      \@tempcntb=\numexpr\flowaround@after-\@tempcntb\relax
-      \flowaround@parshape\@tempcnta\@tempcntb
-    \else
-      \flowaround@parshape\z@\z@
-      \@restorepar
-      \@flowaround@isrunningfalse
-    \fi
-  }%
+  \def\par {\flowaround@origpar \flowaround@afterpar }%
+  \def\@par{\flowaround@origpar \flowaround@afterpar }%
   \ignorespaces
 }
 \ExplSyntaxOff
+\def\flowaround@afterpar{%
+  \advance\flowaround@totalheight\dimexpr\prevgraf\baselineskip+\parskip\relax
+  \dimen@=\dimexpr\flowaround@boxheight-\flowaround@totalheight\relax
+  \ifdim\dimen@>\z@ % box stretches to the next para
+    \flowaround@numoflines\dimen@\@tempcnta
+    \flowaround@numoflines\flowaround@totalheight\@tempcntb
+    \@tempcntb=\numexpr\flowaround@after-\@tempcntb\relax
+    \flowaround@parshape\@tempcnta\@tempcntb
+  \else
+    \flowaround@parshape\z@\z@
+    \let\par\flowaround@origpar
+    \let\@par\flowaround@orig@par
+    \@flowaround@isrunningfalse
+  \fi
+}
 
 % Usage:
 %       \flowaround*[<after>]{<image>}[<text>]

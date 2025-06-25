@@ -13,8 +13,7 @@
 
 \protected\def\flowaround#1#{%
   \if@flowaround@isrunning
-    \ifdefined\flowaround@origpar \let\par\flowaround@origpar \fi
-    \ifdefined\flowaround@orig@par \let\@par\flowaround@orig@par \fi
+    \flowaround@restorepar
     \PackageWarning{flowaround}{Conflit with preceding paragraph?}%
   \fi
   \@flowaround@isrunningtrue
@@ -84,26 +83,37 @@
   \flowaround@numoflines\flowaround@boxheight\@tempcnta
   \flowaround@parshape\@tempcnta\flowaround@after
   % redefine \par
-  \let\flowaround@origpar\par
+  \flowaround@storepar
   \flowaround@totalheight\z@
-  \def\par{\flowaround@origpar
-    % dimen@    : height remaining
-    % @tempcnta : lines to be indented
-    % @tempcntb : remaining <after>
-    \advance\flowaround@totalheight\dimexpr\prevgraf\baselineskip+\parskip\relax
-    \dimen@=\dimexpr\flowaround@boxheight-\flowaround@totalheight\relax
-    \ifdim\dimen@>\z@ % box stretches to the next para
-      \flowaround@numoflines\dimen@\@tempcnta
-      \flowaround@numoflines\flowaround@totalheight\@tempcntb
-      \@tempcntb=\numexpr\flowaround@after-\@tempcntb\relax
-      \flowaround@parshape\@tempcnta\@tempcntb
-    \else
-      \flowaround@parshape\z@\z@
-      \let\par\flowaround@origpar
-      \@flowaround@isrunningfalse
-    \fi
-  }%
+  \flowaround@redefinepar
   \ignorespaces
+}
+
+\def\flowaround@storepar{%
+  \let\flowaround@origpar\par
+}
+\def\flowaround@restorepar{%
+  \let\par\flowaround@origpar
+}
+\def\flowaround@redefinepar{%
+  \def\par{\flowaround@origpar \flowaround@afterpar }%
+}
+\def\flowaround@afterpar{%
+  % dimen@    : height remaining
+  % @tempcnta : lines to be indented
+  % @tempcntb : remaining <after>
+  \advance\flowaround@totalheight\dimexpr\prevgraf\baselineskip+\parskip\relax
+  \dimen@=\dimexpr\flowaround@boxheight-\flowaround@totalheight\relax
+  \ifdim\dimen@>\z@ % box stretches to the next para
+    \flowaround@numoflines\dimen@\@tempcnta
+    \flowaround@numoflines\flowaround@totalheight\@tempcntb
+    \@tempcntb=\numexpr\flowaround@after-\@tempcntb\relax
+    \flowaround@parshape\@tempcnta\@tempcntb
+  \else
+    \flowaround@parshape\z@\z@
+    \flowaround@restorepar
+    \@flowaround@isrunningfalse
+  \fi
 }
 
 \def\flowaround@numoflines#1#2{%
@@ -185,7 +195,8 @@
   \tag_struct_begin:n{tag=Aside, firstkid}
 }
 %
-\cs_set:Npn\flowaround@flowaround#1[#2]{%
+\cs_set:Npn \flowaround@flowaround #1[#2]
+{
   \tag_socket_use:n{flowaround/mainbox/begin}
   \setbox\z@\hbox{#1}%
   \tag_socket_use:n{flowaround/mainbox/end}
@@ -234,29 +245,27 @@
   \flowaround@numoflines\flowaround@boxheight\@tempcnta
   \flowaround@parshape\@tempcnta\flowaround@after
   % redefine \par
-  \let\flowaround@origpar\par
-  \let\flowaround@orig@par\@par
+  \flowaround@storepar
   \flowaround@totalheight\z@
-  \def\par {\flowaround@origpar \flowaround@afterpar }%
-  \def\@par{\flowaround@origpar \flowaround@afterpar }%
+  \flowaround@redefinepar
   \ignorespaces
 }
-\ExplSyntaxOff
-\def\flowaround@afterpar{%
-  \advance\flowaround@totalheight\dimexpr\prevgraf\baselineskip+\parskip\relax
-  \dimen@=\dimexpr\flowaround@boxheight-\flowaround@totalheight\relax
-  \ifdim\dimen@>\z@ % box stretches to the next para
-    \flowaround@numoflines\dimen@\@tempcnta
-    \flowaround@numoflines\flowaround@totalheight\@tempcntb
-    \@tempcntb=\numexpr\flowaround@after-\@tempcntb\relax
-    \flowaround@parshape\@tempcnta\@tempcntb
-  \else
-    \flowaround@parshape\z@\z@
-    \let\par\flowaround@origpar
-    \let\@par\flowaround@orig@par
-    \@flowaround@isrunningfalse
-  \fi
+\cs_set_nopar:Npn \flowaround@storepar
+{
+  \let\flowaround@origpar\par
+  \let\flowaround@orig@par\@par
 }
+\cs_set_nopar:Npn \flowaround@restorepar
+{
+  \let\par\flowaround@origpar
+  \let\@par\flowaround@orig@par
+}
+\cs_set_nopar:Npn \flowaround@redefinepar
+{
+  \def\par {\flowaround@origpar \flowaround@afterpar }%
+  \def\@par{\flowaround@origpar \flowaround@afterpar }%
+}
+\ExplSyntaxOff
 
 % Usage:
 %       \flowaround*[<after>]{<image>}[<text>]

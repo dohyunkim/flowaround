@@ -42,6 +42,17 @@ moves the image box downwards by `<number>` lines.
 typesets `<caption>` below the image box.
 For real LaTeX captions, use `\captionof` command from caption package.
 
+```
+\def\flowaroundhmargin{1em}
+```
+sets the horizontal margin beside the image box, default value being `1em`.
+
+```
+\def\flowaroundvmargin{1ex}
+```
+sets the vertical margin below the image box (including the caption, if any),
+default value being `1ex`.
+
 ## License
 
 Public Domain.

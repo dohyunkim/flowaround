@@ -1,5 +1,7 @@
-\ProvidesPackage{flowaround}[2016/06/23 v0.5 texts flow around]
+\ProvidesPackage{flowaround}[2025/06/25 v0.6 texts flow around]
 
+\def\flowaroundhmargin{1em}
+\def\flowaroundvmargin{1ex}
 \newdimen\flowaround@boxwidth
 \newdimen\flowaround@boxheight
 \newdimen\flowaround@leftmargin
@@ -51,9 +53,9 @@
     \centering
     \unhbox\z@
     \par #2%
-    \vskip1ex % 1ex: vert. margin
+    \vskip\flowaroundvmargin % 1ex: vert. margin
   }%
-  \flowaround@boxwidth=\dimexpr\wd\z@+1em\relax % 1em : horiz. margin
+  \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
   \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
   \ht\z@=\flowaround@boxheight
   \dp\z@=\z@
@@ -198,11 +200,10 @@
     \leavevmode \tag_socket_use:n{flowaround/mainbox/use}
     \unhbox\z@
     \par #2%
-    \vskip1ex % 1ex: vert. margin
+    \vskip\flowaroundvmargin % 1ex: vert. margin
   }%
-  \expandafter \endgroup
-  \setbox\z@\lastbox
-  \flowaround@boxwidth=\dimexpr\wd\z@+1em\relax % 1em : horiz. margin
+  \expandafter \endgroup \setbox\z@\lastbox
+  \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
   \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
   \ht\z@=\flowaround@boxheight
   \dp\z@=\z@
@@ -234,7 +235,7 @@
   % redefine \par
   \let\flowaround@origpar\par
   \flowaround@totalheight\z@
-  \def\par{\flowaround@origpar
+  \@setpar{\flowaround@origpar
     % dimen@    : height remaining
     % @tempcnta : lines to be indented
     % @tempcntb : remaining <after>
@@ -247,7 +248,7 @@
       \flowaround@parshape\@tempcnta\@tempcntb
     \else
       \flowaround@parshape\z@\z@
-      \let\par\flowaround@origpar
+      \@restorepar
       \@flowaround@isrunningfalse
     \fi
   }%

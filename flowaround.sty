@@ -91,12 +91,14 @@
 
 \def\flowaround@storepar{%
   \let\flowaround@origpar\par
+  \let\flowaround@orig@par\@par
 }
 \def\flowaround@restorepar{%
   \let\par\flowaround@origpar
+  \let\@par\flowaround@orig@par
 }
 \def\flowaround@redefinepar{%
-  \def\par{\flowaround@origpar \flowaround@afterpar }%
+  \@setpar{\flowaround@origpar \flowaround@afterpar }%
 }
 \def\flowaround@afterpar{%
   % dimen@    : height remaining
@@ -192,7 +194,7 @@
 {
   \tag_mc_end_push:
   \bool_if:NT \l__tag_para_bool {\tag_struct_end:}
-  \tag_struct_begin:n{tag=Aside, firstkid}
+  \tag_struct_begin:n{tag=Div, firstkid}
 }
 %
 \cs_set:Npn \flowaround@flowaround #1[#2]
@@ -249,21 +251,6 @@
   \flowaround@totalheight\z@
   \flowaround@redefinepar
   \ignorespaces
-}
-\cs_set_nopar:Npn \flowaround@storepar
-{
-  \let\flowaround@origpar\par
-  \let\flowaround@orig@par\@par
-}
-\cs_set_nopar:Npn \flowaround@restorepar
-{
-  \let\par\flowaround@origpar
-  \let\@par\flowaround@orig@par
-}
-\cs_set_nopar:Npn \flowaround@redefinepar
-{
-  \def\par {\flowaround@origpar \flowaround@afterpar }%
-  \def\@par{\flowaround@origpar \flowaround@afterpar }%
 }
 \ExplSyntaxOff
 

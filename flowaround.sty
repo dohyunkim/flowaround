@@ -2,6 +2,7 @@
 
 \def\flowaroundhmargin{1em}
 \def\flowaroundvmargin{1ex}
+\def\flowaroundraisebox{0pt}
 \newdimen\flowaround@boxwidth
 \newdimen\flowaround@boxheight
 \newdimen\flowaround@leftmargin
@@ -50,6 +51,7 @@
     \ifnum\flowaround@after>\z@
       \vskip\flowaround@after\baselineskip
     \fi
+    \vskip-\flowaroundraisebox
     \centering
     \unhbox\z@
     \par #2%
@@ -210,6 +212,7 @@
     \ifnum\flowaround@after>\z@
       \vskip\flowaround@after\baselineskip
     \fi
+    \vskip-\flowaroundraisebox
     \centering
     \leavevmode \tag_socket_use:n{flowaround/mainbox/use}
     \unhbox\z@

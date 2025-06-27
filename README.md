@@ -1,11 +1,11 @@
 
 # flowaround
 
-A LaTeX package for typesetting a paragraph whose text flows around an image (or any other) box.
+A LaTeX package for typesetting a paragraph (or more) whose text flows around an image (or any other) box.
 
 ## Usage
 
-In preamble:
+In the preamble:
 ```
 \usepackage{flowaround}
 ```
@@ -21,7 +21,7 @@ Starting a paragraph with this command is also OK in most cases.
 ```
 {<image>}
 ```
-Any horizontal stuffs.
+Any horizontal stuff.
 When inserting an image, use `\includegraphics` command for yourself.
 
 ## Options
@@ -52,6 +52,12 @@ sets the horizontal margin beside the image box, default value being `1em`.
 ```
 sets the vertical margin below the image box (including the caption, if any),
 default value being `1ex`.
+
+```
+\def\flowaroundraisebox{0pt}
+```
+raises the image box (including the caption, if any) by the amount specified,
+default value being `0pt`.
 
 ## License
 

@@ -13,8 +13,11 @@ and in the body of document:
 ```
 \flowaround*[<number>]{<image>}[<caption>]
 ```
-This command should come near the start of a paragraph.
+This command should come near the start of a paragraph (on the fist line of a paragraph).
 Starting a paragraph with this command is also OK in most cases.
+
+But you have to put the command just before the paragraph
+when it is the fist paragraph in a float or a minipage.
 
 ## Argument
 

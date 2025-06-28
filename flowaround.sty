@@ -11,6 +11,7 @@
 \newcount\flowaround@after
 \newif\if@flowaround@putright
 \newif\if@flowaround@isrunning
+\newif\if@flowaround@minipage
 
 \protected\def\flowaround#1#{%
   \if@flowaround@isrunning
@@ -25,6 +26,9 @@
     \@flowaround@putrightfalse
   \fi
   \flowaround@get@after#1[\z@]\stop
+  % we have to put \flowaround command just before the paragraph
+  % if it is the fist paragraph in a float or a minipage
+  \if@minipage \@flowaround@minipagetrue \else \@flowaround@minipagefalse \fi
   \leavevmode
   \ifinner
     \PackageError{flowaround}{No work in inner mode.}{hbox or alignment?}%
@@ -46,8 +50,10 @@
   \setbox\z@\hbox{#1}%
   \setbox\z@\vbox{\hsize\wd\z@\linewidth\hsize
     \parskip\z@skip
-    \setbox\tw@\hbox{M}%
-    \vskip\ht\tw@
+    \if@flowaround@minipage\else
+      \setbox\tw@\hbox{My}%
+      \vskip\dimexpr\baselineskip-\ht\tw@-\dp\tw@\relax
+    \fi
     \ifnum\flowaround@after>\z@
       \vskip\flowaround@after\baselineskip
     \fi
@@ -59,7 +65,7 @@
   }%
   \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
   \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
-  \ht\z@=\flowaround@boxheight
+  \ht\z@=\z@
   \dp\z@=\z@
   % typeset the box
   \vadjust pre {%
@@ -74,7 +80,7 @@
     \fi
     \box\z@
     \kern\rightmargin
-    \vskip-\flowaround@boxheight
+    \par
   }%
   % calculate variables; paragraph shaping
   \flowaround@leftmargin=\@totalleftmargin
@@ -207,8 +213,10 @@
   \begingroup \socket_assign_plug:nn{tagsupport/parbox/before}{flowaround}
   \parbox[b]{\wd\z@}{%
     \parskip\z@skip
-    \setbox\tw@\hbox{M}%
-    \vskip\ht\tw@
+    \if@flowaround@minipage\else
+      \setbox\tw@\hbox{My}%
+      \vskip\dimexpr\baselineskip-\ht\tw@-\dp\tw@\relax
+    \fi
     \ifnum\flowaround@after>\z@
       \vskip\flowaround@after\baselineskip
     \fi
@@ -222,7 +230,7 @@
   \expandafter \endgroup \setbox\z@\lastbox
   \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
   \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
-  \ht\z@=\flowaround@boxheight
+  \ht\z@=\z@
   \dp\z@=\z@
   % typeset the box
   \tag_suspend:n{\flowaround}
@@ -238,7 +246,7 @@
     \fi
     \box\z@
     \kern\rightmargin
-    \vskip-\flowaround@boxheight
+    \par
   }%
   \tag_resume:n{\flowaround}
   % calculate variables; paragraph shaping

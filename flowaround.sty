@@ -32,6 +32,14 @@
   \else
     \dimen@=\z@
   \fi
+  \ifdim\dimen@<\z@ % the first paragraph of float/minipage
+    \dimen@=\z@
+  \else
+    \dimen@=\dimexpr\baselineskip-\dimen@-0.8em\relax % 0.8em: assumed height of the line
+    \ifdim\dimen@<\lineskiplimit
+      \dimen@=\lineskip
+    \fi
+  \fi
   \leavevmode
   \ifinner
     \PackageError{flowaround}{No work in inner mode.}{hbox or alignment?}%
@@ -53,13 +61,7 @@
   \setbox\z@\hbox{#1}%
   \setbox\z@\vbox{\hsize\wd\z@\linewidth\hsize
     \parskip\z@skip
-    \ifdim\dimen@<\z@ % the first paragraph of float/minipage
-      \global\dimen@=\z@
-    \else
-      \setbox\tw@\hbox{My}%
-      \global\dimen@=\dimexpr\baselineskip-\ht\tw@-\dp\tw@\relax
-      \vskip\dimen@
-    \fi
+    \vskip\dimen@
     \ifnum\flowaround@after>\z@
       \vskip\flowaround@after\baselineskip
     \fi
@@ -219,13 +221,7 @@
   \begingroup \socket_assign_plug:nn{tagsupport/parbox/before}{flowaround}
   \parbox[b]{\wd\z@}{%
     \parskip\z@skip
-    \ifdim\dimen@<\z@
-      \global\dimen@=\z@
-    \else
-      \setbox\tw@\hbox{My}%
-      \global\dimen@=\dimexpr\baselineskip-\ht\tw@-\dp\tw@\relax
-      \vskip\dimen@
-    \fi
+    \vskip\dimen@
     \ifnum\flowaround@after>\z@
       \vskip\flowaround@after\baselineskip
     \fi

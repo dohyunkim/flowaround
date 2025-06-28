@@ -11,7 +11,6 @@
 \newcount\flowaround@after
 \newif\if@flowaround@putright
 \newif\if@flowaround@isrunning
-\newif\if@flowaround@minipage
 
 \protected\def\flowaround#1#{%
   \if@flowaround@isrunning
@@ -28,7 +27,11 @@
   \flowaround@get@after#1[\z@]\stop
   % we have to put \flowaround command just before the paragraph
   % if it is the fist paragraph in a float or a minipage
-  \if@minipage \@flowaround@minipagetrue \else \@flowaround@minipagefalse \fi
+  \ifvmode
+    \dimen@=\prevdepth
+  \else
+    \dimen@=\z@
+  \fi
   \leavevmode
   \ifinner
     \PackageError{flowaround}{No work in inner mode.}{hbox or alignment?}%
@@ -50,9 +53,12 @@
   \setbox\z@\hbox{#1}%
   \setbox\z@\vbox{\hsize\wd\z@\linewidth\hsize
     \parskip\z@skip
-    \if@flowaround@minipage\else
+    \ifdim\dimen@<\z@ % the first paragraph of float/minipage
+      \global\dimen@=\z@
+    \else
       \setbox\tw@\hbox{My}%
-      \vskip\dimexpr\baselineskip-\ht\tw@-\dp\tw@\relax
+      \global\dimen@=\dimexpr\baselineskip-\ht\tw@-\dp\tw@\relax
+      \vskip\dimen@
     \fi
     \ifnum\flowaround@after>\z@
       \vskip\flowaround@after\baselineskip
@@ -64,7 +70,7 @@
     \vskip\flowaroundvmargin % 1ex: vert. margin
   }%
   \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
-  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
+  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@-\dimen@\relax
   \ht\z@=\z@
   \dp\z@=\z@
   % typeset the box
@@ -213,9 +219,12 @@
   \begingroup \socket_assign_plug:nn{tagsupport/parbox/before}{flowaround}
   \parbox[b]{\wd\z@}{%
     \parskip\z@skip
-    \if@flowaround@minipage\else
+    \ifdim\dimen@<\z@
+      \global\dimen@=\z@
+    \else
       \setbox\tw@\hbox{My}%
-      \vskip\dimexpr\baselineskip-\ht\tw@-\dp\tw@\relax
+      \global\dimen@=\dimexpr\baselineskip-\ht\tw@-\dp\tw@\relax
+      \vskip\dimen@
     \fi
     \ifnum\flowaround@after>\z@
       \vskip\flowaround@after\baselineskip
@@ -229,7 +238,7 @@
   }%
   \expandafter \endgroup \setbox\z@\lastbox
   \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
-  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
+  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@-\dimen@\relax
   \ht\z@=\z@
   \dp\z@=\z@
   % typeset the box

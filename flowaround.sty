@@ -25,21 +25,6 @@
     \@flowaround@putrightfalse
   \fi
   \flowaround@get@after#1[\z@]\stop
-  % we have to put \flowaround command just before the paragraph
-  % if it is the fist paragraph in a float or a minipage
-  \ifvmode
-    \dimen@=\prevdepth
-  \else
-    \dimen@=\z@
-  \fi
-  \ifdim\dimen@<\z@ % the first paragraph of float/minipage
-    \dimen@=\z@
-  \else
-    \dimen@=\dimexpr\baselineskip-\dimen@-0.8em\relax % 0.8em: assumed height of the line
-    \ifdim\dimen@<\lineskiplimit
-      \dimen@=\lineskip
-    \fi
-  \fi
   \leavevmode
   \ifinner
     \PackageError{flowaround}{No work in inner mode.}{hbox or alignment?}%
@@ -57,11 +42,31 @@
                {\flowaround@flowaround{#1}[]}%
 }
 
+\def\flowaround@checkvspace{%
+  \ifdim\dimexpr\pagegoal-\pagetotal\relax<\flowaround@boxheight
+    \vadjust pre{\penalty-\@M}%
+  \fi
+}
+
+\def\flowaround@thevadjust{%
+  \vadjust {%
+    \vskip-.9em % assumes that last line has positive depth value
+    \vbox{\noindent
+    \kern\@totalleftmargin
+    \if@flowaround@putright
+      \hfill
+    \fi
+    \box\z@
+    \kern\rightmargin
+    \par}%
+    \penalty\@M\vskip.9em
+  }
+}
+
 \long\def\flowaround@flowaround#1[#2]{%
   \setbox\z@\hbox{#1}%
   \setbox\z@\vbox{\hsize\wd\z@\linewidth\hsize
     \parskip\z@skip
-    \vskip\dimen@
     \ifnum\flowaround@after>\z@
       \vskip\flowaround@after\baselineskip
     \fi
@@ -72,24 +77,13 @@
     \vskip\flowaroundvmargin % 1ex: vert. margin
   }%
   \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
-  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@-\dimen@\relax
+  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
   \ht\z@=\z@
   \dp\z@=\z@
+  % check the remaining vertical space
+  \flowaround@checkvspace
   % typeset the box
-  \vadjust pre {%
-    \ifdim\dimexpr\pagegoal-\pagetotal\relax
-          <\dimexpr\flowaround@boxheight+\baselineskip\relax
-      \penalty-\@M
-    \fi
-    \noindent
-    \kern\@totalleftmargin
-    \if@flowaround@putright
-      \hfill
-    \fi
-    \box\z@
-    \kern\rightmargin
-    \par
-  }%
+  \flowaround@thevadjust
   % calculate variables; paragraph shaping
   \flowaround@leftmargin=\@totalleftmargin
   \if@flowaround@putright \else
@@ -221,7 +215,6 @@
   \begingroup \socket_assign_plug:nn{tagsupport/parbox/before}{flowaround}
   \parbox[b]{\wd\z@}{%
     \parskip\z@skip
-    \vskip\dimen@
     \ifnum\flowaround@after>\z@
       \vskip\flowaround@after\baselineskip
     \fi
@@ -234,25 +227,14 @@
   }%
   \expandafter \endgroup \setbox\z@\lastbox
   \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
-  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@-\dimen@\relax
+  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
   \ht\z@=\z@
   \dp\z@=\z@
+  % check the remaining vertical space
+  \flowaround@checkvspace
   % typeset the box
   \tag_suspend:n{\flowaround}
-  \vadjust pre {%
-    \ifdim\dimexpr\pagegoal-\pagetotal\relax
-          <\dimexpr\flowaround@boxheight+\baselineskip\relax
-      \penalty-\@M
-    \fi
-    \noindent
-    \kern\@totalleftmargin
-    \if@flowaround@putright
-      \hfill
-    \fi
-    \box\z@
-    \kern\rightmargin
-    \par
-  }%
+  \flowaround@thevadjust
   \tag_resume:n{\flowaround}
   % calculate variables; paragraph shaping
   \flowaround@leftmargin=\@totalleftmargin

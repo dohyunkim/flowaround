@@ -14,10 +14,7 @@ and in the body of document:
 \flowaround*[<number>]{<image>}[<caption>]
 ```
 This command should come near the start of a paragraph (on the fist line of a paragraph).
-
-But starting a paragraph with this command is recommended in most cases.
-Especially when it is used with the first paragraph in a float or a minipage,
-it is strongly recommended to put the command at the start of the paragraph.
+Starting a paragraph with this command is OK in most cases.
 
 ## Argument
 

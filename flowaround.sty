@@ -49,8 +49,9 @@
 }
 
 \def\flowaround@thevadjust{%
+  \vrule width\z@ height.83em depth.21em
   \vadjust {%
-    \vskip-.9em % assumes that last line has positive depth value
+    \vskip-1.04em
     \vbox{\noindent
     \kern\@totalleftmargin
     \if@flowaround@putright
@@ -59,7 +60,7 @@
     \box\z@
     \kern\rightmargin
     \par}%
-    \penalty\@M\vskip.9em
+    \penalty\@M\vskip 1.04em
   }
 }
 

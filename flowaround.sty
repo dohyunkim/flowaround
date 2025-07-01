@@ -1,4 +1,4 @@
-\ProvidesPackage{flowaround}[2025/06/25 v0.6 texts flow around]
+\ProvidesPackage{flowaround}[2025/07/01 v0.7 texts flow around]
 
 \def\flowaroundhmargin{1em}
 \def\flowaroundvmargin{1ex}
@@ -14,10 +14,10 @@
 
 \protected\def\flowaround#1#{%
   \if@flowaround@isrunning
-    \flowaround@restorepar
+    \suppressflowaround
     \PackageWarning{flowaround}{Conflit with preceding paragraph?}%
   \fi
-  \@flowaround@isrunningtrue
+  \global\@flowaround@isrunningtrue
   \in@*{#1}%
   \ifin@
     \@flowaround@putrighttrue
@@ -61,7 +61,7 @@
     \kern\rightmargin
     \par}%
     \penalty\@M\vskip 1.04em
-  }
+  }%
 }
 
 \long\def\flowaround@flowaround#1[#2]{%
@@ -94,28 +94,29 @@
   \flowaround@numoflines\flowaround@boxheight\@tempcnta
   \flowaround@parshape\@tempcnta\flowaround@after
   % redefine \par
-  \flowaround@storepar
-  \flowaround@totalheight\z@
   \flowaround@redefinepar
   \ignorespaces
 }
 
-\def\flowaround@storepar{%
-  \let\flowaround@origpar\par
-  \let\flowaround@orig@par\@par
+\AddToHook{para/after}{\flowaround@para@after}
+\AddToHook{para/begin}{\flowaround@para@begin}
+\def\suppressflowaround{%
+  \let\flowaround@para@after\relax
+  \let\flowaround@para@begin\relax
 }
-\def\flowaround@restorepar{%
-  \let\par\flowaround@origpar
-  \let\@par\flowaround@orig@par
-}
+\suppressflowaround
 \def\flowaround@redefinepar{%
-  \@setpar{\flowaround@origpar \flowaround@afterpar }%
+  \global\flowaround@totalheight\z@
+  \let\flowaround@para@after\flowaround@do@para@after
+  \let\flowaround@para@begin\flowaround@do@para@begin
 }
-\def\flowaround@afterpar{%
-  % dimen@    : height remaining
+\def\flowaround@do@para@after{%
+  \global\advance\flowaround@totalheight\dimexpr\prevgraf\baselineskip+\parskip\relax
+}
+\def\flowaround@do@para@begin{%
+  % dimen@ : height remaining
   % @tempcnta : lines to be indented
   % @tempcntb : remaining <after>
-  \advance\flowaround@totalheight\dimexpr\prevgraf\baselineskip+\parskip\relax
   \dimen@=\dimexpr\flowaround@boxheight-\flowaround@totalheight\relax
   \ifdim\dimen@>\z@ % box stretches to the next para
     \flowaround@numoflines\dimen@\@tempcnta
@@ -124,8 +125,8 @@
     \flowaround@parshape\@tempcnta\@tempcntb
   \else
     \flowaround@parshape\z@\z@
-    \flowaround@restorepar
-    \@flowaround@isrunningfalse
+    \suppressflowaround
+    \global\@flowaround@isrunningfalse
   \fi
 }
 
@@ -246,8 +247,6 @@
   \flowaround@numoflines\flowaround@boxheight\@tempcnta
   \flowaround@parshape\@tempcnta\flowaround@after
   % redefine \par
-  \flowaround@storepar
-  \flowaround@totalheight\z@
   \flowaround@redefinepar
   \ignorespaces
 }

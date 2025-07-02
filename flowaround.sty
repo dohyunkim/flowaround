@@ -1,4 +1,4 @@
-\ProvidesPackage{flowaround}[2025/07/01 v0.7 texts flow around]
+\ProvidesPackage{flowaround}[2025/07/01 v0.7 text flows around a box]
 
 \def\flowaroundhmargin{1em}
 \def\flowaroundvmargin{1ex}
@@ -8,6 +8,8 @@
 \newdimen\flowaround@leftmargin
 \newdimen\flowaround@linewidth
 \newdimen\flowaround@totalheight
+\newdimen\flowaround@lastpagetotal
+\newdimen\flowaround@tempdima
 \newcount\flowaround@after
 \newif\if@flowaround@putright
 \newif\if@flowaround@isrunning
@@ -45,6 +47,9 @@
 \def\flowaround@checkvspace{%
   \ifdim\dimexpr\pagegoal-\pagetotal\relax<\flowaround@boxheight
     \vadjust pre{\penalty-\@M}%
+    \global\flowaround@lastpagetotal\z@
+  \else
+    \global\flowaround@lastpagetotal\pagetotal
   \fi
 }
 
@@ -100,9 +105,10 @@
 
 \AddToHook{para/after}{\flowaround@para@after}
 \AddToHook{para/begin}{\flowaround@para@begin}
-\def\suppressflowaround{%
+\protected\def\suppressflowaround{%
   \let\flowaround@para@after\relax
   \let\flowaround@para@begin\relax
+  \hangindent\z@
 }
 \suppressflowaround
 \def\flowaround@redefinepar{%
@@ -111,10 +117,22 @@
   \let\flowaround@para@begin\flowaround@do@para@begin
 }
 \def\flowaround@do@para@after{%
-  \global\advance\flowaround@totalheight\dimexpr\prevgraf\baselineskip+\parskip\relax
+  \global\flowaround@tempdima=\dimexpr\prevgraf\baselineskip+\parskip\relax
 }
 \def\flowaround@do@para@begin{%
-  % dimen@ : height remaining
+  \dimen@=\dimexpr\pagetotal-\flowaround@lastpagetotal\relax
+  \ifdim\dimen@>\z@
+    \ifdim\flowaround@lastpagetotal=\z@
+      \dimen@=\dimexpr \topskip-0.83em\relax
+      \ifdim\dimen@<\z@ \dimen@=\z@ \fi
+      \dimen@=\dimexpr\pagetotal-\dimen@+1.04em+0.6pt\relax % 0.6pt: trial/error
+    \fi
+  \else
+    \dimen@=\flowaround@tempdima
+  \fi
+  \global\advance\flowaround@totalheight\dimen@
+  \global\flowaround@lastpagetotal=\pagetotal
+  % dimen@    : height remaining
   % @tempcnta : lines to be indented
   % @tempcntb : remaining <after>
   \dimen@=\dimexpr\flowaround@boxheight-\flowaround@totalheight\relax
@@ -124,7 +142,6 @@
     \@tempcntb=\numexpr\flowaround@after-\@tempcntb\relax
     \flowaround@parshape\@tempcnta\@tempcntb
   \else
-    \flowaround@parshape\z@\z@
     \suppressflowaround
     \global\@flowaround@isrunningfalse
   \fi

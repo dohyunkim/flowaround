@@ -16,12 +16,6 @@ and in the body of document:
 This command should come near the start of a paragraph (on the first line of a paragraph).
 Starting a paragraph with this command is OK in most cases.
 
-```latex
-\suppressflowaround
-```
-suppresses the flowaround effect for the scope.
-It could be useful at the start of a footnote text while flowaround is active in the main text.
-
 ## Argument
 
 ```latex
@@ -64,6 +58,15 @@ default value being `1ex`.
 ```
 raises the image box (including the caption, if any) by the amount specified,
 default value being `0pt`.
+
+## A related macro
+
+```latex
+\suppressflowaround
+```
+suppresses the flowaround effect for the scope.
+It could be useful for a footnote while flowaround is active in the main text.
+For instance, `\begin{suppressflowaround}\footnote{...}\end{suppressflowaround}`.
 
 ## License
 

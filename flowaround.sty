@@ -125,7 +125,9 @@
     \ifdim\flowaround@lastpagetotal=\z@
       \dimen@=\dimexpr \topskip-0.83em\relax
       \ifdim\dimen@<\z@ \dimen@=\z@ \fi
-      \dimen@=\dimexpr\pagetotal-\dimen@+1.04em+0.6pt\relax % 0.6pt: trial/error
+      \dimen@ii=\dimexpr \baselineskip-0.83em\relax
+      \ifdim\dimen@ii<\z@ \dimen@ii=\z@ \fi
+      \dimen@=\dimexpr\pagetotal-\dimen@+\dimen@ii\relax
     \fi
   \else
     \dimen@=\flowaround@tempdima

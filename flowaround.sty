@@ -11,6 +11,7 @@
 \newdimen\flowaround@lastpagetotal
 \newdimen\flowaround@tempdima
 \newdimen\flowaround@tempdimb
+\newdimen\flowaround@tempdimc
 \newcount\flowaround@after
 \newif\if@flowaround@putright
 \newif\if@flowaround@isrunning
@@ -46,6 +47,7 @@
 }
 
 \def\flowaround@checkvspace{%
+  \flowaround@tempdimc=\pagetotal
   \ifdim\dimexpr\pagegoal-\pagetotal\relax<\flowaround@boxheight
     \vadjust pre{\penalty-\@M}%
     \global\flowaround@lastpagetotal\z@
@@ -55,7 +57,7 @@
   \ifdim\flowaround@lastpagetotal=\z@
     \dimen@=\dimexpr \topskip-0.83em\relax
     \ifdim\dimen@<\z@ \dimen@=\z@ \fi
-    \global\flowaround@lastpagetotal=\dimexpr\dimen@-\baselineskip+0.83em\relax
+    \flowaround@tempdimb=\dimexpr\dimen@-\baselineskip+0.83em\relax
   \fi
 }
 
@@ -123,14 +125,19 @@
 }
 \def\flowaround@do@para@after{%
   \global\flowaround@tempdima=\dimexpr\prevgraf\baselineskip+\parskip\relax
-  \global\flowaround@tempdimb=\prevdepth
 }
 \def\flowaround@do@para@begin{%
-  \dimen@=\dimexpr\pagetotal-\flowaround@lastpagetotal\relax
-  \global\flowaround@lastpagetotal=\pagetotal
-  \ifdim\dimen@>\z@ \else
+  \dimen@=\dimexpr\pagetotal-\flowaround@tempdimc\relax
+  \ifdim\dimen@>\z@
+    \ifdim\flowaround@lastpagetotal=\z@
+      \dimen@=\dimexpr\pagetotal-\flowaround@tempdimb\relax
+    \else
+      \dimen@=\dimexpr\pagetotal-\flowaround@lastpagetotal\relax
+    \fi
+  \else
     \dimen@=\flowaround@tempdima
   \fi
+  \global\flowaround@lastpagetotal=\pagetotal
   \global\advance\flowaround@totalheight\dimen@
   % dimen@    : height remaining
   % @tempcnta : lines to be indented
@@ -143,7 +150,8 @@
     \flowaround@parshape\@tempcnta\@tempcntb
   \else
     \flowaround@parshape\z@\z@
-    \suppressflowaround
+    \global\let\flowaround@para@after\relax
+    \global\let\flowaround@para@begin\relax
     \global\@flowaround@isrunningfalse
   \fi
 }

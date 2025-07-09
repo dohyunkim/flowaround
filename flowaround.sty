@@ -10,6 +10,7 @@
 \newdimen\flowaround@totalheight
 \newdimen\flowaround@lastpagetotal
 \newdimen\flowaround@tempdima
+\newdimen\flowaround@tempdimb
 \newcount\flowaround@after
 \newif\if@flowaround@putright
 \newif\if@flowaround@isrunning
@@ -117,6 +118,7 @@
 }
 \def\flowaround@do@para@after{%
   \global\flowaround@tempdima=\dimexpr\prevgraf\baselineskip+\parskip\relax
+  \global\flowaround@tempdimb=\prevdepth
 }
 \def\flowaround@do@para@begin{%
   \dimen@=\dimexpr\pagetotal-\flowaround@lastpagetotal\relax
@@ -124,9 +126,10 @@
     \ifdim\flowaround@lastpagetotal=\z@
       \dimen@=\dimexpr \topskip-0.83em\relax
       \ifdim\dimen@<\z@ \dimen@=\z@ \fi
-      \dimen@ii=\dimexpr \baselineskip-0.83em\relax
-      \ifdim\dimen@ii<\z@ \dimen@ii=\z@ \fi
-      \dimen@=\dimexpr\pagetotal-\dimen@+\dimen@ii\relax
+      \vrule width\z@ height.83em\relax
+      \dimen@ii=\dimexpr \baselineskip-\flowaround@tempdimb-0.83em\relax
+      \ifdim\dimen@ii<\z@ \dimen@ii=\lineskip \fi
+      \dimen@=\dimexpr\pagetotal-\dimen@+\flowaround@tempdimb+\dimen@ii\relax
     \fi
   \else
     \dimen@=\flowaround@tempdima

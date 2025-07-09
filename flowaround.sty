@@ -52,6 +52,11 @@
   \else
     \global\flowaround@lastpagetotal\pagetotal
   \fi
+  \ifdim\flowaround@lastpagetotal=\z@
+    \dimen@=\dimexpr \topskip-0.83em\relax
+    \ifdim\dimen@<\z@ \dimen@=\z@ \fi
+    \global\flowaround@lastpagetotal=\dimexpr\dimen@-\baselineskip+0.83em\relax
+  \fi
 }
 
 \def\flowaround@thevadjust{%
@@ -122,21 +127,9 @@
 }
 \def\flowaround@do@para@begin{%
   \dimen@=\dimexpr\pagetotal-\flowaround@lastpagetotal\relax
-  \ifdim\dimen@>\z@
-    \ifdim\flowaround@lastpagetotal=\z@
-      \dimen@=\dimexpr \topskip-0.83em\relax
-      \ifdim\dimen@<\z@ \dimen@=\z@ \fi
-      \vrule width\z@ height.83em\relax
-      \dimen@ii=\dimexpr \baselineskip-\flowaround@tempdimb-0.83em\relax
-      \ifdim\dimen@ii<\z@ \dimen@ii=\lineskip \fi
-      \dimen@=\dimexpr\pagetotal-\dimen@+\dimen@ii\relax
-      \global\flowaround@lastpagetotal=\dimexpr\pagetotal-\flowaround@tempdimb\relax
-    \else
-      \global\flowaround@lastpagetotal=\pagetotal
-    \fi
-  \else
+  \global\flowaround@lastpagetotal=\pagetotal
+  \ifdim\dimen@>\z@ \else
     \dimen@=\flowaround@tempdima
-    \global\flowaround@lastpagetotal=\pagetotal
   \fi
   \global\advance\flowaround@totalheight\dimen@
   % dimen@    : height remaining

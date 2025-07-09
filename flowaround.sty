@@ -129,13 +129,16 @@
       \vrule width\z@ height.83em\relax
       \dimen@ii=\dimexpr \baselineskip-\flowaround@tempdimb-0.83em\relax
       \ifdim\dimen@ii<\z@ \dimen@ii=\lineskip \fi
-      \dimen@=\dimexpr\pagetotal-\dimen@+\flowaround@tempdimb+\dimen@ii\relax
+      \dimen@=\dimexpr\pagetotal-\dimen@+\dimen@ii\relax
+      \global\flowaround@lastpagetotal=\dimexpr\pagetotal-\flowaround@tempdimb\relax
+    \else
+      \global\flowaround@lastpagetotal=\pagetotal
     \fi
   \else
     \dimen@=\flowaround@tempdima
+    \global\flowaround@lastpagetotal=\pagetotal
   \fi
   \global\advance\flowaround@totalheight\dimen@
-  \global\flowaround@lastpagetotal=\pagetotal
   % dimen@    : height remaining
   % @tempcnta : lines to be indented
   % @tempcntb : remaining <after>

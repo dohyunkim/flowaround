@@ -253,7 +253,7 @@
     \par #2%
     \vskip\flowaroundvmargin % 1ex: vert. margin
   }%
-  \expandafter \endgroup \setbox\z@\lastbox
+  \endgroup \setbox\z@\lastbox
   \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
   \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
   \ht\z@=\z@

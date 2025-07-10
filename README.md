@@ -13,7 +13,7 @@ and in the body of document:
 ```latex
 \flowaround*[<number>]{<image>}[<caption>]
 ```
-This command should come near the start of a paragraph (on the first line of a paragraph).
+This command should be located near the start of a paragraph (on the first line of a paragraph).
 Starting a paragraph with this command is OK in most cases.
 
 ## Argument
@@ -67,6 +67,30 @@ default value being `0pt`.
 suppresses the flowaround effect for the scope.
 It could be useful for a footnote while flowaround is active in the main text.
 For instance, `\begin{suppressflowaround}\footnote{...}\end{suppressflowaround}`.
+
+## Example
+
+```latex
+\documentclass[10pt,a4paper]{article}
+\usepackage[hangul]{kotex}
+\usepackage{graphicx,caption,flowaround}
+\setmainfont{Noto Sans CJK KR}[Script=Hangul,Language=Korean]
+\def\ganada{가나다라 마바사아 자차카타 파하. }
+\begin{document}
+\ganada
+\flowaround*
+        {\includegraphics[width=100pt]{mill}}
+        [\small \captionof{figure}{물방아간}]
+\ganada \ganada \ganada \ganada \ganada
+
+\ganada \ganada \ganada \ganada \ganada \ganada\unskip
+{\suppressflowaround\footnote{%
+  \ganada \ganada \ganada \ganada \ganada
+}}
+
+\ganada \ganada \ganada \ganada \ganada \ganada
+\end{document}
+```
 
 ## License
 

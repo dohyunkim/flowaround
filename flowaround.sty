@@ -125,18 +125,16 @@
 }
 \def\flowaround@do@para@after{%
   \global\flowaround@tempdima=\dimexpr\prevgraf\baselineskip+\parskip\relax
+  \flowaround@lastparaheight\dimen@
+  \advance\dimen@\flowaround@totalheight
+  \ifdim\flowaround@boxheight>\dimen@ \else
+    \global\let\flowaround@para@after\relax
+    \global\let\flowaround@para@begin\relax
+    \global\@flowaround@isrunningfalse
+  \fi
 }
 \def\flowaround@do@para@begin{%
-  \dimen@=\dimexpr\pagetotal-\flowaround@tempdimc\relax
-  \ifdim\dimen@>\z@
-    \ifdim\flowaround@lastpagetotal=\z@
-      \dimen@=\dimexpr\pagetotal-\flowaround@tempdimb\relax
-    \else
-      \dimen@=\dimexpr\pagetotal-\flowaround@lastpagetotal\relax
-    \fi
-  \else
-    \dimen@=\flowaround@tempdima
-  \fi
+  \flowaround@lastparaheight\dimen@
   \global\flowaround@lastpagetotal=\pagetotal
   \global\advance\flowaround@totalheight\dimen@
   % dimen@    : height remaining
@@ -153,6 +151,18 @@
     \global\let\flowaround@para@after\relax
     \global\let\flowaround@para@begin\relax
     \global\@flowaround@isrunningfalse
+  \fi
+}
+\def\flowaround@lastparaheight#1{%
+  #1=\dimexpr\pagetotal-\flowaround@tempdimc\relax
+  \ifdim#1>\z@
+    \ifdim\flowaround@lastpagetotal=\z@
+      #1=\dimexpr\pagetotal-\flowaround@tempdimb\relax
+    \else
+      #1=\dimexpr\pagetotal-\flowaround@lastpagetotal\relax
+    \fi
+  \else
+    #1=\flowaround@tempdima
   \fi
 }
 

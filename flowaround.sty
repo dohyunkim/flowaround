@@ -12,21 +12,18 @@
 \newdimen\flowaround@tempdima
 \newdimen\flowaround@tempdimb
 \newdimen\flowaround@tempdimc
-\newcount\flowaround@after
-\newif\if@flowaround@putright
-\newif\if@flowaround@isrunning
 
 \protected\def\flowaround#1#{%
-  \if@flowaround@isrunning
+  \ifx\flowaround@isrunning\@ne
     \suppressflowaround
     \PackageWarning{flowaround}{Conflit with preceding paragraph?}%
   \fi
-  \global\@flowaround@isrunningtrue
+  \global\let\flowaround@isrunning\@ne
   \in@*{#1}%
   \ifin@
-    \@flowaround@putrighttrue
+    \let\flowaround@putright=\@ne
   \else
-    \@flowaround@putrightfalse
+    \let\flowaround@putright=\z@
   \fi
   \flowaround@get@after#1[\z@]\stop
   \leavevmode
@@ -38,7 +35,7 @@
 }
 
 \def\flowaround@get@after#1[#2]#3\stop{%
-  \flowaround@after=#2\relax
+  \chardef\flowaround@after=#2\relax
 }
 
 \long\def\flowaround@@#1{%
@@ -67,7 +64,7 @@
     \vskip-1.04em
     \vbox{\noindent
     \kern\@totalleftmargin
-    \if@flowaround@putright
+    \ifx\flowaround@putright\@ne
       \hfill
     \fi
     \box\z@
@@ -100,7 +97,7 @@
   \flowaround@thevadjust
   % calculate variables; paragraph shaping
   \flowaround@leftmargin=\@totalleftmargin
-  \if@flowaround@putright \else
+  \ifx\flowaround@putright\z@
     \advance\flowaround@leftmargin \flowaround@boxwidth
   \fi
   \flowaround@linewidth=\dimexpr\linewidth-\flowaround@boxwidth\relax
@@ -128,9 +125,7 @@
   \flowaround@lastparaheight\dimen@
   \advance\dimen@\flowaround@totalheight
   \ifdim\flowaround@boxheight>\dimen@ \else
-    \global\let\flowaround@para@after\relax
-    \global\let\flowaround@para@begin\relax
-    \global\@flowaround@isrunningfalse
+    \global\let\flowaround@isrunning\z@
   \fi
 }
 \def\flowaround@do@para@begin{%
@@ -150,7 +145,7 @@
     \flowaround@parshape\z@\z@
     \global\let\flowaround@para@after\relax
     \global\let\flowaround@para@begin\relax
-    \global\@flowaround@isrunningfalse
+    \global\let\flowaround@isrunning\z@
   \fi
 }
 \def\flowaround@lastparaheight#1{%
@@ -186,7 +181,7 @@
       \flowaround@parshape@parshape{#1}\z@
     \else
       \ifnum#1>\z@
-        \hangindent\if@flowaround@putright-\fi\flowaround@boxwidth
+        \hangindent\ifx\flowaround@putright\@ne-\fi\flowaround@boxwidth
         \hangafter-#1\relax
       \else
         \hangindent\z@
@@ -276,7 +271,7 @@
   \tag_resume:n{\flowaround}
   % calculate variables; paragraph shaping
   \flowaround@leftmargin=\@totalleftmargin
-  \if@flowaround@putright \else
+  \ifx\flowaround@putright\z@
     \advance\flowaround@leftmargin \flowaround@boxwidth
   \fi
   \flowaround@linewidth=\dimexpr\linewidth-\flowaround@boxwidth\relax

@@ -80,7 +80,7 @@ For instance, `\begin{suppressflowaround}\footnote{...}\end{suppressflowaround}`
 \ganada
 \flowaround*
         {\includegraphics[width=100pt]{mill}}
-        [\small \captionof{figure}{물방아간}]
+        [\captionof{figure}{방앗간}]
 \ganada \ganada \ganada \ganada \ganada
 
 \ganada \ganada \ganada \ganada \ganada \ganada\unskip

@@ -54,7 +54,9 @@
   \ifdim\flowaround@lastpagetotal=\z@
     \dimen@=\dimexpr \topskip-0.83em\relax
     \ifdim\dimen@<\z@ \dimen@=\z@ \fi
-    \flowaround@tempdimb=\dimexpr\dimen@-\baselineskip+0.83em\relax
+    \dimen@ii=\dimexpr \baselineskip-0.83em\relax
+    \ifdim\dimen@ii<\z@ \dimen@ii=\lineskip \fi
+    \flowaround@tempdimb=\dimexpr\dimen@-\dimen@ii\relax
   \fi
 }
 

@@ -9,6 +9,7 @@
 \newdimen\flowaround@linewidth
 \newdimen\flowaround@totalheight
 \newdimen\flowaround@lastpagetotal
+\newdimen\flowaround@origlatexleftmargin
 \newdimen\flowaround@tempdima
 \newdimen\flowaround@tempdimb
 \newdimen\flowaround@tempdimc
@@ -73,6 +74,7 @@
     \kern\rightmargin
     \par}%
     \penalty\@M\vskip 1.04em
+    \vskip\z@\relax
   }%
 }
 
@@ -98,6 +100,13 @@
   % typeset the box
   \flowaround@thevadjust
   % calculate variables; paragraph shaping
+  \flowaround@do@firstpara
+  % redefine \par
+  \flowaround@redefinepar
+  \ignorespaces
+}
+\def\flowaround@do@firstpara{%
+  \flowaround@origlatexleftmargin=\@totalleftmargin
   \flowaround@leftmargin=\@totalleftmargin
   \ifx\flowaround@putright\z@
     \advance\flowaround@leftmargin \flowaround@boxwidth
@@ -105,9 +114,6 @@
   \flowaround@linewidth=\dimexpr\linewidth-\flowaround@boxwidth\relax
   \flowaround@numoflines\flowaround@boxheight\@tempcnta
   \flowaround@parshape\@tempcnta\flowaround@after
-  % redefine \par
-  \flowaround@redefinepar
-  \ignorespaces
 }
 
 \AddToHook{para/after}{\flowaround@para@after}
@@ -200,10 +206,13 @@
     \toks@\expandafter{\the\toks@\@totalleftmargin\linewidth}%
     \advance\count@\@ne
   \repeat
+  \dimen@ii=\dimexpr\@totalleftmargin-\flowaround@origlatexleftmargin\relax
+  \@tempdima=\dimexpr\flowaround@leftmargin+\dimen@ii\relax
+  \@tempdimb=\dimexpr\flowaround@linewidth -\dimen@ii\relax
   \count@\z@
   \loop
     \ifnum\count@<\numexpr#1-#2\relax
-    \toks@\expandafter{\the\toks@\flowaround@leftmargin\flowaround@linewidth}%
+    \toks@\expandafter{\the\toks@\@tempdima\@tempdimb}%
     \advance\count@\@ne
   \repeat
   \parshape \numexpr#1+1\relax \the\toks@ \@totalleftmargin \linewidth
@@ -255,13 +264,7 @@
   \flowaround@thevadjust
   \tag_resume:n{\flowaround}
   % calculate variables; paragraph shaping
-  \flowaround@leftmargin=\@totalleftmargin
-  \ifx\flowaround@putright\z@
-    \advance\flowaround@leftmargin \flowaround@boxwidth
-  \fi
-  \flowaround@linewidth=\dimexpr\linewidth-\flowaround@boxwidth\relax
-  \flowaround@numoflines\flowaround@boxheight\@tempcnta
-  \flowaround@parshape\@tempcnta\flowaround@after
+  \flowaround@do@firstpara
   % redefine \par
   \flowaround@redefinepar
   \ignorespaces

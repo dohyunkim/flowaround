@@ -22,9 +22,9 @@
   \global\let\flowaround@isrunning\@ne
   \in@*{#1}%
   \ifin@
-    \let\flowaround@putright=\@ne
+    \global\let\flowaround@putright=\@ne
   \else
-    \let\flowaround@putright=\z@
+    \global\let\flowaround@putright=\z@
   \fi
   \flowaround@get@after#1[\z@]\stop
   \leavevmode
@@ -36,7 +36,7 @@
 }
 
 \def\flowaround@get@after#1[#2]#3\stop{%
-  \chardef\flowaround@after=#2\relax
+  \global\chardef\flowaround@after=#2\relax
 }
 
 \long\def\flowaround@@#1{%
@@ -45,7 +45,7 @@
 }
 
 \def\flowaround@checkvspace{%
-  \flowaround@tempdimc=\pagetotal
+  \global\flowaround@tempdimc=\pagetotal
   \ifdim\dimexpr\pagegoal-\pagetotal\relax<\flowaround@boxheight
     \vadjust pre{\penalty-\@M}%
     \global\flowaround@lastpagetotal\z@
@@ -57,7 +57,7 @@
     \ifdim\dimen@<\z@ \dimen@=\z@ \fi
     \dimen@ii=\dimexpr \baselineskip-0.83em\relax
     \ifdim\dimen@ii<\z@ \dimen@ii=\lineskip \fi
-    \flowaround@tempdimb=\dimexpr\dimen@-\dimen@ii\relax
+    \global\flowaround@tempdimb=\dimexpr\dimen@-\dimen@ii\relax
   \fi
 }
 
@@ -91,8 +91,7 @@
     \par #2%
     \vskip\flowaroundvmargin % 1ex: vert. margin
   }%
-  \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
-  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
+  \flowaround@boxwidth@boxheight
   \ht\z@=\z@
   \dp\z@=\z@
   % check the remaining vertical space
@@ -105,13 +104,17 @@
   \flowaround@redefinepar
   \ignorespaces
 }
+\def\flowaround@boxwidth@boxheight{%
+  \global\flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
+  \global\flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
+}
 \def\flowaround@do@firstpara{%
-  \flowaround@origlatexleftmargin=\@totalleftmargin
-  \flowaround@leftmargin=\@totalleftmargin
+  \global\flowaround@origlatexleftmargin=\@totalleftmargin
+  \global\flowaround@leftmargin=\@totalleftmargin
   \ifx\flowaround@putright\z@
-    \advance\flowaround@leftmargin \flowaround@boxwidth
+    \global\advance\flowaround@leftmargin \flowaround@boxwidth
   \fi
-  \flowaround@linewidth=\dimexpr\linewidth-\flowaround@boxwidth\relax
+  \global\flowaround@linewidth=\dimexpr\linewidth-\flowaround@boxwidth\relax
   \flowaround@numoflines\flowaround@boxheight\@tempcnta
   \flowaround@parshape\@tempcnta\flowaround@after
 }
@@ -125,8 +128,8 @@
 \suppressflowaround
 \def\flowaround@redefinepar{%
   \global\flowaround@totalheight\z@
-  \let\flowaround@para@after\flowaround@do@para@after
-  \let\flowaround@para@begin\flowaround@do@para@begin
+  \global\let\flowaround@para@after\flowaround@do@para@after
+  \global\let\flowaround@para@begin\flowaround@do@para@begin
 }
 \def\flowaround@do@para@after{%
   \global\flowaround@tempdima=\dimexpr\prevgraf\baselineskip+\parskip\relax
@@ -253,8 +256,7 @@
     \vskip\flowaroundvmargin % 1ex: vert. margin
   }%
   \tag_socket_use:n{flowaround/mainbox/end}
-  \flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
-  \flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
+  \flowaround@boxwidth@boxheight
   \ht\z@=\z@
   \dp\z@=\z@
   % check the remaining vertical space

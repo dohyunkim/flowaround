@@ -9,10 +9,10 @@
 \newdimen\flowaround@linewidth
 \newdimen\flowaround@totalheight
 \newdimen\flowaround@lastpagetotal
-\newdimen\flowaround@origlatexleftmargin
-\newdimen\flowaround@tempdima
-\newdimen\flowaround@tempdimb
-\newdimen\flowaround@tempdimc
+\newdimen\flowaround@origleftmargin
+\newdimen\flowaround@prevgrafparaht
+\newdimen\flowaround@toppagetotal
+\newdimen\flowaround@origpagetotal
 
 \protected\def\flowaround#1#{%
   \ifx\flowaround@isrunning\@ne
@@ -44,8 +44,34 @@
                {\flowaround@flowaround{#1}[]}%
 }
 
-\def\flowaround@checkvspace{%
-  \global\flowaround@tempdimc=\pagetotal
+\long\def\flowaround@flowaround#1[#2]{%
+  \setbox\z@\hbox{#1}%
+  \setbox\z@\vbox{\hsize\wd\z@\linewidth\hsize
+    \parskip\z@skip
+    \ifnum\flowaround@after>\z@
+      \vskip\flowaround@after\baselineskip
+    \fi
+    \vskip-\flowaroundraisebox
+    \centering
+    \unhbox\z@
+    \par #2%
+    \vskip\flowaroundvmargin % 1ex: vert. margin
+  }%
+  % typeset the box
+  \flowaround@thevadjust
+  % calculate variables; paragraph shaping
+  \flowaround@do@firstpara
+  % redefine \par
+  \flowaround@redefinepar
+  \ignorespaces
+}
+\def\flowaround@thevadjust{%
+  \global\flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
+  \global\flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
+  \ht\z@=\z@
+  \dp\z@=\z@
+  % check the remaining vertical space
+  \global\flowaround@origpagetotal=\pagetotal
   \ifdim\dimexpr\pagegoal-\pagetotal\relax<\flowaround@boxheight
     \vadjust pre{\penalty-\@M}%
     \global\flowaround@lastpagetotal\z@
@@ -57,11 +83,9 @@
     \ifdim\dimen@<\z@ \dimen@=\z@ \fi
     \dimen@ii=\dimexpr \baselineskip-0.83em\relax
     \ifdim\dimen@ii<\z@ \dimen@ii=\lineskip \fi
-    \global\flowaround@tempdimb=\dimexpr\dimen@-\dimen@ii\relax
+    \global\flowaround@toppagetotal=\dimexpr\dimen@-\dimen@ii\relax
   \fi
-}
-
-\def\flowaround@thevadjust{%
+  % do typeset the box
   \vrule width\z@ height.83em depth.21em
   \vadjust {%
     \vskip-1.04em
@@ -77,39 +101,8 @@
     \vskip\z@\relax
   }%
 }
-
-\long\def\flowaround@flowaround#1[#2]{%
-  \setbox\z@\hbox{#1}%
-  \setbox\z@\vbox{\hsize\wd\z@\linewidth\hsize
-    \parskip\z@skip
-    \ifnum\flowaround@after>\z@
-      \vskip\flowaround@after\baselineskip
-    \fi
-    \vskip-\flowaroundraisebox
-    \centering
-    \unhbox\z@
-    \par #2%
-    \vskip\flowaroundvmargin % 1ex: vert. margin
-  }%
-  \flowaround@boxwidth@boxheight
-  \ht\z@=\z@
-  \dp\z@=\z@
-  % check the remaining vertical space
-  \flowaround@checkvspace
-  % typeset the box
-  \flowaround@thevadjust
-  % calculate variables; paragraph shaping
-  \flowaround@do@firstpara
-  % redefine \par
-  \flowaround@redefinepar
-  \ignorespaces
-}
-\def\flowaround@boxwidth@boxheight{%
-  \global\flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
-  \global\flowaround@boxheight=\dimexpr\ht\z@+\dp\z@\relax
-}
 \def\flowaround@do@firstpara{%
-  \global\flowaround@origlatexleftmargin=\@totalleftmargin
+  \global\flowaround@origleftmargin=\@totalleftmargin
   \global\flowaround@leftmargin=\@totalleftmargin
   \ifx\flowaround@putright\z@
     \global\advance\flowaround@leftmargin \flowaround@boxwidth
@@ -132,7 +125,7 @@
   \global\let\flowaround@para@begin\flowaround@do@para@begin
 }
 \def\flowaround@do@para@after{%
-  \global\flowaround@tempdima=\dimexpr\prevgraf\baselineskip+\parskip\relax
+  \global\flowaround@prevgrafparaht=\dimexpr\prevgraf\baselineskip+\parskip\relax
   \flowaround@lastparaheight\dimen@
   \advance\dimen@\flowaround@totalheight
   \ifdim\flowaround@boxheight>\dimen@ \else
@@ -160,15 +153,15 @@
   \fi
 }
 \def\flowaround@lastparaheight#1{%
-  #1=\dimexpr\pagetotal-\flowaround@tempdimc\relax
+  #1=\dimexpr\pagetotal-\flowaround@origpagetotal\relax
   \ifdim#1>\z@
     \ifdim\flowaround@lastpagetotal=\z@
-      #1=\dimexpr\pagetotal-\flowaround@tempdimb\relax
+      #1=\dimexpr\pagetotal-\flowaround@toppagetotal\relax
     \else
       #1=\dimexpr\pagetotal-\flowaround@lastpagetotal\relax
     \fi
   \else
-    #1=\flowaround@tempdima
+    #1=\flowaround@prevgrafparaht
   \fi
 }
 
@@ -209,7 +202,7 @@
     \toks@\expandafter{\the\toks@\@totalleftmargin\linewidth}%
     \advance\count@\@ne
   \repeat
-  \dimen@ii=\dimexpr\@totalleftmargin-\flowaround@origlatexleftmargin\relax
+  \dimen@ii=\dimexpr\@totalleftmargin-\flowaround@origleftmargin\relax
   \@tempdima=\dimexpr\flowaround@leftmargin+\dimen@ii\relax
   \@tempdimb=\dimexpr\flowaround@linewidth -\dimen@ii\relax
   \count@\z@
@@ -256,11 +249,6 @@
     \vskip\flowaroundvmargin % 1ex: vert. margin
   }%
   \tag_socket_use:n{flowaround/mainbox/end}
-  \flowaround@boxwidth@boxheight
-  \ht\z@=\z@
-  \dp\z@=\z@
-  % check the remaining vertical space
-  \flowaround@checkvspace
   % typeset the box
   \tag_suspend:n{\flowaround}
   \flowaround@thevadjust

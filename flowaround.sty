@@ -9,10 +9,11 @@
 \newdimen\flowaround@linewidth
 \newdimen\flowaround@totalheight
 \newdimen\flowaround@lastpagetotal
-\newdimen\flowaround@origleftmargin
 \newdimen\flowaround@prevgrafparaht
 \newdimen\flowaround@toppagetotal
 \newdimen\flowaround@origpagetotal
+\newdimen\flowaround@origleftmargin
+\newdimen\flowaround@origrightmargin
 
 \protected\def\flowaround#1#{%
   \ifx\flowaround@isrunning\@ne
@@ -103,6 +104,7 @@
 }
 \def\flowaround@do@firstpara{%
   \global\flowaround@origleftmargin=\@totalleftmargin
+  \global\flowaround@origrightmargin=\rightmargin
   \global\flowaround@leftmargin=\@totalleftmargin
   \ifx\flowaround@putright\z@
     \global\advance\flowaround@leftmargin \flowaround@boxwidth
@@ -185,7 +187,13 @@
       \flowaround@parshape@parshape{#1}\z@
     \else
       \ifnum#1>\z@
-        \hangindent\ifx\flowaround@putright\@ne-\fi\flowaround@boxwidth
+        \ifnum\flowaround@putright=\z@
+          \dimen@=\dimexpr\flowaround@origleftmargin-\@totalleftmargin\relax
+        \else
+          \dimen@=\dimexpr\flowaround@origrightmargin-\rightmargin\relax
+        \fi
+        \advance\dimen@\flowaround@boxwidth
+        \hangindent\ifx\flowaround@putright\@ne-\fi\dimen@
         \hangafter-#1\relax
       \else
         \hangindent\z@
@@ -202,9 +210,10 @@
     \toks@\expandafter{\the\toks@\@totalleftmargin\linewidth}%
     \advance\count@\@ne
   \repeat
-  \dimen@ii=\dimexpr\@totalleftmargin-\flowaround@origleftmargin\relax
-  \@tempdima=\dimexpr\flowaround@leftmargin+\dimen@ii\relax
-  \@tempdimb=\dimexpr\flowaround@linewidth -\dimen@ii\relax
+  \dimen@   =\dimexpr\flowaround@origleftmargin -\@totalleftmargin\relax
+  \dimen@ii =\dimexpr\flowaround@origrightmargin-\rightmargin\relax
+  \@tempdima=\dimexpr\flowaround@leftmargin-\dimen@\relax
+  \@tempdimb=\dimexpr\flowaround@linewidth +\dimen@+\dimen@ii\relax
   \count@\z@
   \loop
     \ifnum\count@<\numexpr#1-#2\relax

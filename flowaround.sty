@@ -193,10 +193,10 @@
           \dimen@=\dimexpr\flowaround@origrightmargin-\rightmargin\relax
         \fi
         \advance\dimen@\flowaround@boxwidth
-        \hangindent\ifx\flowaround@putright\@ne-\fi\dimen@
-        \hangafter-#1\relax
+        \global \hangindent\ifx\flowaround@putright\@ne-\fi\dimen@
+        \global \hangafter-#1\relax
       \else
-        \hangindent\z@
+        \global \hangindent\z@
       \fi
     \fi
   \fi
@@ -220,7 +220,7 @@
     \toks@\expandafter{\the\toks@\@tempdima\@tempdimb}%
     \advance\count@\@ne
   \repeat
-  \parshape \numexpr#1+1\relax \the\toks@ \@totalleftmargin \linewidth
+  \global \parshape \numexpr#1+1\relax \the\toks@ \@totalleftmargin \linewidth
 }
 
 \ifcsname ver@tagpdf.sty\endcsname \else \endinput \fi

@@ -187,16 +187,9 @@
       \flowaround@parshape@parshape{#1}\z@
     \else
       \ifnum#1>\z@
-        \ifnum\flowaround@putright=\z@
-          \dimen@=\dimexpr\flowaround@origleftmargin-\@totalleftmargin\relax
-        \else
-          \dimen@=\dimexpr\flowaround@origrightmargin-\rightmargin\relax
-        \fi
-        \advance\dimen@\flowaround@boxwidth
-        \global \hangindent\ifx\flowaround@putright\@ne-\fi\dimen@
-        \global \hangafter-#1\relax
+        \flowaround@parshape@parshape{#1}\z@
       \else
-        \global \hangindent\z@
+        %\global \hangindent\hangindent
       \fi
     \fi
   \fi
@@ -204,10 +197,13 @@
 
 \def\flowaround@parshape@parshape#1#2{%
   \toks@{}%
+  \let\flowaround@hangafter\z@ % latex's hangafter is 1 in sections
   \count@\z@
   \loop
     \ifnum\count@<#2\relax
-    \toks@\expandafter{\the\toks@\@totalleftmargin\linewidth}%
+    \@tempdima=\@totalleftmargin
+    \flowaround@addhangindent\@tempdima
+    \toks@\expanded{{\the\toks@\space\the\@tempdima\space\linewidth}}%
     \advance\count@\@ne
   \repeat
   \dimen@   =\dimexpr\flowaround@origleftmargin -\@totalleftmargin\relax
@@ -217,10 +213,19 @@
   \count@\z@
   \loop
     \ifnum\count@<\numexpr#1-#2\relax
-    \toks@\expandafter{\the\toks@\@tempdima\@tempdimb}%
+    \flowaround@addhangindent\@tempdima
+    \toks@\expanded{{\the\toks@\space\the\@tempdima\space\the\@tempdimb}}%
     \advance\count@\@ne
   \repeat
-  \global \parshape \numexpr#1+1\relax \the\toks@ \@totalleftmargin \linewidth
+  \global \parshape \numexpr#1+1\relax \the\toks@
+    \dimexpr\@totalleftmargin+\hangindent\relax \linewidth
+}
+\def\flowaround@addhangindent#1{%
+  \ifx\flowaround@hangafter\@ne
+    \advance#1\hangindent
+  \else
+    \let\flowaround@hangafter\@ne
+  \fi
 }
 
 \ifcsname ver@tagpdf.sty\endcsname \else \endinput \fi

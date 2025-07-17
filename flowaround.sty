@@ -230,13 +230,13 @@
 
 \ifcsname ver@tagpdf.sty\endcsname \else \endinput \fi
 \ExplSyntaxOn
-\socket_new:nn{tagsupport/flowaround/mainbox/begin}{0}
+\socket_new:nn{tagsupport/flowaround/mainbox/begin}{1}
 \socket_new:nn{tagsupport/flowaround/mainbox/end}{0}
 \socket_new_plug:nnn{tagsupport/flowaround/mainbox/begin}{default}
 {
   \tag_mc_end:
   \__tag_get_marginpar_parent:N \l_tmpa_tl
-  \tag_struct_begin:e{tag=Div,parent=\l_tmpa_tl,firstkid}
+  \tag_struct_begin:e{tag=#1,parent=\l_tmpa_tl,firstkid}
 }
 \socket_new_plug:nnn{tagsupport/flowaround/mainbox/end}{default}
 {
@@ -251,7 +251,12 @@
   \tag_suspend:n{\flowaround}
   \setbox\z@\hbox{#1}%
   \tag_resume:n{\flowaround}
-  \tag_socket_use:n{flowaround/mainbox/begin}
+  \in@\captionof{#2}%
+  \ifin@
+    \tag_socket_use:nn{flowaround/mainbox/begin}{Aside}
+  \else
+    \tag_socket_use:nn{flowaround/mainbox/begin}{Div}
+  \fi
   \setbox\z@\vbox{\hsize\wd\z@\linewidth\hsize
     \parskip\z@skip
     \ifnum\flowaround@after>\z@

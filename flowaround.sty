@@ -29,6 +29,7 @@
   \fi
   \flowaround@get@after#1[\z@]\stop
   \leavevmode
+  \@bsphack
   \ifinner
     \PackageError{flowaround}{No work in inner mode.}{hbox or alignment?}%
   \else
@@ -64,7 +65,7 @@
   \flowaround@do@firstpara
   % redefine \par
   \flowaround@redefinepar
-  \ignorespaces
+  \@esphack
 }
 \def\flowaround@thevadjust{%
   \global\flowaround@boxwidth=\dimexpr\wd\z@+\flowaroundhmargin\relax % 1em : horiz. margin
@@ -276,7 +277,7 @@
   \flowaround@do@firstpara
   % redefine \par
   \flowaround@redefinepar
-  \ignorespaces
+  \@esphack
 }
 \ExplSyntaxOff
 

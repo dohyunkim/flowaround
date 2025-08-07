@@ -29,7 +29,6 @@
   \fi
   \flowaround@get@after#1[\z@]\stop
   \leavevmode
-  \@bsphack
   \ifinner
     \PackageError{flowaround}{No work in inner mode.}{hbox or alignment?}%
   \else
@@ -47,6 +46,7 @@
 }
 
 \long\def\flowaround@flowaround#1[#2]{%
+  \@bsphack
   \setbox\z@\hbox{#1}%
   \setbox\z@\vbox{\hsize\wd\z@\linewidth\hsize
     \parskip\z@skip
@@ -249,6 +249,7 @@
 %
 \cs_set:Npn \flowaround@flowaround #1[#2]
 {
+  \@bsphack
   \tag_suspend:n{\flowaround}
   \setbox\z@\hbox{#1}%
   \tag_resume:n{\flowaround}
